@@ -1,2 +1,4 @@
 # nextflow-crash-course
-A short tutorial for NExtflow pipuline engine, starting from the basics
+A short tutorial for the Nextflow pipeline engine, starting from the basics.
+
+

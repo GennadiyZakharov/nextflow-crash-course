@@ -1,0 +1,11 @@
+.nextflow*
+work/
+data/
+lib/
+results/
+.DS_Store
+testing/
+testing*
+*.pyc
+singularity/
+.idea/
