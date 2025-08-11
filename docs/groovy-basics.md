@@ -90,18 +90,11 @@ def greeting = "Hello ${name}"
 assert greeting.toString() == 'Hello Guillaume'
 ```
 
-We can use `$` to access properties of maps:
-
-```groovy
-def person = [name: 'Guillaume', age: 36]
-assert "$person.name is $person.age years old" == 'Guillaume is 36 years old'
-```
-
 To make the end of the variable explicit, we use brackets:
 
 ```groovy
-def person = [name: 'Guillaume', age: 36]
-print "$person.name age is ${person.age} years old"
+def verb = 'count'
+print "3d form of $verb is ${verb}s"
 ```
 
 Brackets can interpolate expressions (same as Python f-strings).
@@ -122,17 +115,6 @@ as there is no need to escape backslashes.
 def fooPattern = /.*foo.*/
 assert fooPattern == '.*foo.*'
 ```
-
-Slashy strings are multiline:
-```groovy
-ef multilineSlashy = /one
-    two
-    three/
-```
-
-Dollar slashy strings are multiline GStrings 
-delimited with an opening `$/` and a closing `/$`. 
-Also, slightly different escaping rules apply.
 
 # Complex data types
 
@@ -319,33 +301,33 @@ assert name == null
 
 The pattern operator (`~`) created regexp object
 
-```groovy
-p = ~'foo'
-assert p instanceof Pattern
-```
-
-We can buils regex pattern and search at the same time
+Use =~ to check whether a given pattern occurs anywhere in a string:
 
 ```groovy
-def text = "some text to match"
-def m = (text =~ /match/)
-assert m instanceof Matcher
-if (!m) { // a Matcher objects coerces to a boolean
-    throw new RuntimeException("Oops, text not found!")
-}
+assert 'hello' =~ /hello/
+assert 'hello world' =~ /hello/
 ```
 
-The match operator (==~) returns a boolean 
-and requires a strict match of the input string:
+The `=~` returns match object - we can use it:
 
 ```groovy
+def programVersion = '2.7.3-beta'
+def m = programVersion =~ /(\d+)\.(\d+)\.(\d+)-?(.+)/
 
-m = text ==~ /match/                                              
-assert m instanceof Boolean                                       
-if (m) {                                                          
-    print("Found!")
-}
+assert m[0] == ['2.7.3-beta', '2', '7', '3', 'beta']
+assert m[0][1] == '2'
+assert m[0][2] == '7'
+assert m[0][3] == '3'
+assert m[0][4] == 'beta'
 ```
+
+Use ==~ to check whether a string matches a given regular expression pattern exactly.
+
+```groovy
+assert 'hello' ==~ /hello/
+assert !('hello world' ==~ /hello/)
+```
+
 
 ## Coercion operator (`as`)
 
@@ -403,14 +385,26 @@ def greet(name) {
 ```
 
 # Closures
-An alternative way to define a function, 
-using brackets. 
-Can define anonymous functions. 
-Very often used in NextFlow
+A closure is a function that can be used like a regular value. Typically, closures are passed as arguments to higher-order functions to express computations in a declarative manner.
+
 
 ```groovy
 def square = { x -> x * x }
 println(square(5))
+```
+
+The main use case for a closure is as an argument to a higher-order function:
+
+```groovy
+[ 1, 2, 3, 4 ].collect({ v -> v * v })
+
+// same way with omitting brackets:
+[ 1, 2, 3, 4 ].collect { v -> v * v }
+
+// print elements of a dictionary
+[ "Yue" : "Wu", "Mark" : "Williams", "Sudha" : "Kumari" ].each { key, value ->
+    println "$key = $value"
+}
 ```
 
 The brackets `()` are used to call closure ane return result.
@@ -425,22 +419,27 @@ assert closureWithTwoArgsAndExplicitTypes(1,2) == 3
 ```
 
 When a closure does not explicitly define a parameter list (using ->), 
-a closure always defines an implicit parameter, named it. This means that this code:
+a closure always defines an implicit parameter, named `it`. This means that this code:
 
 ```groovy
 def greeting = { "Hello, $it!" }
 assert greeting('Patrick') == 'Hello, Patrick!'
 ```
 
-If you want to declare a closure which accepts no argument 
-and must be restricted to calls without arguments, 
-then you must declare it with an explicit empty argument list:
+
+Closures can access variables outside of their scope:
 
 ```groovy
-def magicNumber = { -> 42 }
-// this call will fail because the closure doesn't accept any argument
-magicNumber(11)
+def counts = ["China": 1, "India": 2, "USA": 3]
+
+def result = 0
+counts.keySet().each { v ->
+    result += counts[v]
+}
+
+println result
 ```
+
 
 ## Closures in GStrings
 

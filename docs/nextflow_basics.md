@@ -37,6 +37,29 @@ Providing a config file overrides defaults:
 nextflow -config my.config
 ```
 
+You can provide paremeters in a separate file (JSON or YAML):
+
+```json
+params {
+  "alpha": "default config value"
+}
+```
+
+Parameters are applied in the following order (from lowest to highest priority):
+1. Parameters defined in pipeline scripts (e.g. main.nf)
+2. Parameters defined in config files
+3. Parameters specified in a params file (-params-file)
+4. Parameters specified on the command line (--something value)
+
+### Pulling projects
+
+Nextflow can pull and execute pipelines from git repositories
+
+```bash
+nextflow run nextflow-io/hello -r mybranch
+```
+
+
 ## Modify and resume
 
 Each task is executed in a separate directory under the Nextflow work directory.
