@@ -1,7 +1,9 @@
 Developing Nextflow pipelines
 =============================
 
-Basics of langaudge is in groovy docs:
+Nextflow is a workflow language that runs on the Java virtual machine (JVM). Nextflow’s syntax is very similar to Groovy, a scripting language for the JVM. However, Nextflow is specialized for writing computational pipelines in a declarative manner.
+
+Documentation link: https://www.nextflow.io/docs/latest/script.html 
 
 
 ## Workflows
@@ -54,7 +56,8 @@ The script string is executed as a Bash script in the host environment.
 A process must define a script section. All other sections are optional. 
 
 **Warning:**
-Since Nextflow uses the same Bash syntax for variable substitutions in strings, you must manage them carefully depending on whether you want to evaluate a Nextflow variable or a Bash variable.
+Since Nextflow uses the same Bash syntax for variable substitutions in strings, 
+you must manage them carefully depending on whether you want to evaluate a Nextflow variable or a Bash variable.
 you can define your script with double-quotes and escape the system environment variables by prefixing them with a back-slash `\` character:
 
 ```nextflow
@@ -68,32 +71,11 @@ process blast {
 }
 ```
 
-For BASH you can use `shell` section. Scripts in thsi section use exclamation mark `!` character, 
-instead of the usual dollar `$` character, to denote Nextflow variables.
-
-
-```nextflow
-process hello {
-    input:
-    val str
-    // $USER is treated as a Bash variable
-    //  !{str} is treated as a Nextflow variable
-    shell:
-    '''
-    echo "User $USER says !{str}"
-    '''
-}
-
-workflow {
-    channel.of('Hello', 'Hola', 'Bonjour') | hello
-}
-```
-
-
 Nextflow can interpolate and execure script in any languadge:
 
 ```nextflow
 process perl_task {
+  script:
     """
     #!/usr/bin/perl
 
@@ -159,10 +141,34 @@ workflow {
 ```
 
 You can define a command stub, which replaces the actual process command 
-when the -stub-run or -stub command-line option is enabled:
+when the `-stub-run` or `-stub` command-line option is enabled:
+
+```nextflow
+process salmon_index {
+    input:
+    path transcriptome
+
+    output:
+    path 'index'
+
+    script:
+    """
+    salmon index --threads $task.cpus -t $transcriptome -i index
+    """
+
+    stub:
+    """
+    mkdir index
+    touch index/seq.bin
+    touch index/info.json
+    touch index/refseq.bin
+    """
+}
+```
 
 
-### Script input
+
+## Process input
 
 The input section allows you to define the input channels of a process, similar to function arguments. 
 The input section follows the syntax shown below:
@@ -288,9 +294,28 @@ workflow {
 ```
 each time a file of sequences is emitted from the sequences channel, the process executes three tasks, each running a T-coffee alignment with a different value for the mode parameter. This behavior is useful when you need to repeat the same task over a given set of parameters.
 
+## Output
+In general, follows the same syntax as output.
+All quatifiers (val, path, env, ...) are available for outputs.
+
+
 ## Channels
 
+In Nextflow, channels are the key data structures that facilitate the dataflow dependencies between each step (i.e. process) in a pipeline.
+There are two kinds of channels:
+* A queue channel is a channel that emits an asynchronous sequence of values.
+* A value channel is a channel that is bound to an asynchronous value.
+
+A queue channel can be created by channel factories (e.g., channel.of and channel.fromPath), 
+operators (e.g., map and filter), and processes (see Process outputs).
+`channel.of(1, 2, 3).view { v -> "queue channel emits ${v}" }`
+
+A value channel can be created with the channel.value factory, certain operators (e.g., collect and reduce), and processes (under certain conditions).
+
+The values in a queue channel cannot be accessed directly – they can only be accessed by passing the channel as input to an operator or process. For example:
+
 When two or more channels are declared as process inputs, the process waits until there is a complete input configuration, i.e. until it receives a value from each input channel. When this condition is satisfied, the process consumes a value from each channel and launches a new task, repeating this logic until one or more channels are empty.
+
 
 `channel.of()` - created a channel with a sequence of values:
 
@@ -358,11 +383,58 @@ workflow {
 
 The arity option can be used to enforce the expected number of files, either as a number or a range.
 
-
 ```nextflow
 output:
     path('one.txt', arity: '1')         // exactly one file is expected
     path('pair_*.txt', arity: '2')      // exactly two files are expected
     path('many_*.txt', arity: '1..*')   // one or more files are expected
 ```
+
+### Channel Operators
+
+Channel operators, or operators for short, are functions that consume and produce channels. 
+Because channels are asynchronous, operators are necessary to manipulate the values in a channel. Operators are particularly useful for implementing glue logic between processes.
+
+Commonly used operators include:
+* combine: emit the combinations of two channels
+* collect: collect the values from a channel into a list
+* filter: select the values in a channel that satisfy a condition
+* flatMap: transform each value from a channel into a list and emit each list element separately
+* groupTuple: group the values from a channel based on a grouping key
+* join: join the values from two channels based on a matching key
+* map: transform each value from a channel with a mapping function
+* mix: emit the values from multiple channels
+* view: print each value in a channel to standard output
+
+
+## Workflows
+
+In Nextflow, a workflow is a function that is specialized for composing processes and dataflow logic (i.e. channels and operators).
+
+```nextflow
+workflow {
+    channel.of('Bonjour', 'Ciao', 'Hello', 'Hola')
+        .map { v -> "$v world!" }
+        .view()
+}
+```
+
+Parameters can be declared in a Nextflow script with the params block
+
+A script can declare parameters using the params block:
+
+```nextflow
+params {
+    // Path to input data.
+    input: Path
+
+    // Whether to save intermediate files.
+    save_intermeds: Boolean = false
+}
+```
+
+
+
+
+
 

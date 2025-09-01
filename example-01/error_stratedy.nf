@@ -1,17 +1,7 @@
 /*
-The first working example of Nextflow workflow
-It cheated a big set of random data, 
-and fings in it lines containing 'Gen' substring
-The matching process runs on splitted data - example of parallel data processing
-
-The workflow contains extended comments explaining main Nextflow camabilities
+kflow contains extended comments explaining main Nextflow camabilities
 */
 
-// Nextflow - groovy script
-// 
-
-// Default parameter input
-// Here we automatically initialize the empty dictionary params = [:]
 // settign default parameters
 params.size=1000000  // The size of random data to generate
 params.chunkSize=50000    // Number of lines in each chunk
@@ -26,7 +16,24 @@ process produce {
     script:
     outpath = "input_${size}.txt"
     """
-    cat /dev/urandom | base64 | fold -w 80 | head -n ${size} > ${outpath} || true
+    cat /dev/urandom | base64 | fold -w 80 | head -n ${size} > ${outpath} && false
+    """
+
+    output:
+        path (outpath, arity: '1') // Output: one path to a file
+}
+
+// This process produces one file path - block of random data
+process produce_fail {
+    publishDir "results/produce" // We want to publish input data - see details in the docs
+
+    input:
+        val size     // Input value: one integer
+
+    script:
+    outpath = "input_${size}.txt"
+    """
+    cat /dev/urandom | base64 | fold -w 80 | head -n ${size} > ${outpath} && false
     """
 
     output:

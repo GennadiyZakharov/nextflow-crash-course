@@ -11,15 +11,17 @@ https://groovy-lang.org/documentation.html
 
 Brief and useful section: https://groovy-lang.org/semantics.html
  
+**NExtflow** scripting documentation: https://nextflow.io/docs/latest/script.html
+
 # Introduction
 
-**Groovy** dynamically-types scripting language,
+**Groovy** dynamically-typed scripting language,
 running on top of JVM. 
 Can directly run Java classes.
 
 Java-style comments, operators and basic syntax, but no semicolons.
 
-**Note: non-usual syntax**:
+## Main differences to Java
 
 Methods and function calls can omit parenthesis
 
@@ -55,16 +57,15 @@ containing spaces and other illegal characters.
 # Variables
 
 ## Definition
-Define variable with keywords `def`, `var`, or provide type.
+Define variable with keywords `def`, or provide type.
 
 ```groovy
 def name = "Alice"       // dynamic typing
 int age = 30             // static typing (optional)
-var index = "CB1 9AX"    // dynamic typing with var keyword
 def myBooleanVariable = true // boolean
 ```
 
-**Note** The `var` keyword can't defile complex data structures
+**Note** There is `var` keyword for defining variables, but can't defile complex data structures.
 It's easier to use `def` always.
 
 
@@ -75,7 +76,7 @@ Groovy supports:
 * """triple double quotes""" for multi-line
 
 ```groovy
-var name = "Alice"
+def name = "Alice"
 ```
 
 The `\` character defines special symbols, same as in Python,
@@ -125,6 +126,7 @@ We can directly define lists with the `def` keywork
 ```groovy
 def numbers = [1, 2, 3]
 def heterogeneous = [1, "a", true]
+println numbers.size() // get the length of the list
 ```
 
 Indexing works the same way as in Python
@@ -168,13 +170,6 @@ def matrix3 = new Integer[3][3]
 Integer[][] matrix2 
 ```
 
-For cakward compatibility with Java, groovy can use
-Kava style array init with `{}`
-
-```groovy
-def primes = new int[] {2, 3, 5, 7, 11}
-```
-
 ## Maps (dictionaries)
 
 Groovy creates maps using square brackets and `:` for delimiter.
@@ -184,7 +179,7 @@ def numbers = [1: 'one', 2: 'two']
 assert numbers[1] == 'one'
 ```
 
-**!!! Important: By default, strings in map keys are not quoted**.
+**!!! Important: By default, in Groovy strings in map keys are not quoted**.
 ```groovy
 def ages = [Alice: 25, Bob: 30]
 ```
@@ -217,20 +212,32 @@ assert colors.green  == '#00FF00'
 assert colors.'light blue' == '#8888FF' // using quotas to access string key in point notation. 
 ```
 
-**!!!BAD Accessing nonexistent elements is not an exception.
-Instead, it returns null**
+**!!!BAD Accessing nonexistent elements is not an exception.**
+Instead, it returns `null`
 ```groovy
 def emptyMap = [:]
 assert emptyMap.anyKey == null
 ```
 
 
-## Tuples and multiple assignment
+## Tuples
 
 ```groovy
 // Tuples should be declared with def keyword
+person = tuple('Alice', 42, false)
+
 def (a, b, c) = [10, 20, 'foo']
 def (int i, String j) = [10, 'foo'] // typed tuple
+```
+
+Tuples can be accesses by idexes
+
+```groovy
+name = person[0]
+age = person[1]
+is_male = person[2]
+
+(name, age, is_male) = person
 ```
 
 
@@ -316,12 +323,9 @@ def m = programVersion =~ /(\d+)\.(\d+)\.(\d+)-?(.+)/
 
 assert m[0] == ['2.7.3-beta', '2', '7', '3', 'beta']
 assert m[0][1] == '2'
-assert m[0][2] == '7'
-assert m[0][3] == '3'
-assert m[0][4] == 'beta'
 ```
 
-Use ==~ to check whether a string matches a given regular expression pattern exactly.
+Use `==~` to check whether a string matches a given regular expression pattern exactly.
 
 ```groovy
 assert 'hello' ==~ /hello/
