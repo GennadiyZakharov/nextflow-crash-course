@@ -85,12 +85,32 @@ process mergeResults {
 
 }
 
-// Workflow block
+
+workflow findMatchesInText{
+    /*
+    This test worflow parses an pnput file and finds in it all lines
+    that contain some specific substring
+
+    It splits input file into several chinks, process them in parallel
+    and merges final results int one file.
+    */
+
+    take: // the workflow accepts one input parameter - the channel containing input files
+        data
+    main:
+        chunks = split(data)              // split data file in several chunks
+        chunks_sep = chunks.flatten()     // .flatten() makes each file name a separate channel item
+        matches = findMatches(chunks_sep) // find matches in each chunk - parallel tasks
+        all_matches = matches.collect()   // .collect() joins all items form the channel into one item
+        merged = mergeResults(all_matches)// Merge all matches into one file
+    emit:
+        merged
+}
+
+// The unnamed workflow is the default entry point for nextflow
 workflow {
+    // There is only main part - so wen don't need to declare it
     data_size = channel.of(params.size)   // Create a channel using parameter input
-    data = produce(data_size)             // Create one path - data file
-    chunks = split(data)                  // split initial data file in several chunks
-    chunks_sep = chunks.flatten()
-    matches = findMatches(chunks_sep) // find matches in each chunk
-    merged = mergeResults(matches)
+    data = produce(data_size)             // Generate one random data file
+    merged = findMatchesInRandomText(data_size) // Skip brackets because we have no parameters
 }
