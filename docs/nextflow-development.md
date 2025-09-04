@@ -433,6 +433,15 @@ params {
 }
 ```
 
+Parameters can be used in the entry workflow:
+
+```nextflow
+workflow my_workflow {
+    analyze(params.input, params.save_intermeds)
+}
+```
+
+
 
 
 
