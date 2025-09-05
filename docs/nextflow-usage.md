@@ -47,4 +47,55 @@ Nextflow can pull and execute pipelines from git repositories
 nextflow run nextflow-io/hello -r mybranch
 ```
 
+## Working on the Sanger institute HPC cluster
+Nextflow has build-in support of 'profiles' -- wrappers that adopt scripts to run in different environments.
+Docker, Singularity and Conda profiles are suitable for the local execution.
+Nextflow processes have a special section to define names of images or conda environments.
+
+Most organizations with HPC environments support custom profiles to run Nextflow pipelines.
+To use Nextflow profies on the Sanger Institute HPC,
+you need to add `-profile singularity,sanger` to the Nextflow run parameters.
+
+Here is a good example of the run script for the Sanger HPC:
+```bash
+#!/bin/bash
+set -e
+#BSUB -q "oversubscribed"
+#BSUB -n 2
+#BSUB -M 8G
+#BSUB -R "select[mem>8G] rusage[mem=8G] span[hosts=1]"
+#BSUB -o "sarek-%J-output.log"
+#BSUB -e "sarek-%J-errors.log"
+
+echo 'Load modules'
+module load HGI/common/nextflow/25.04.6
+module load cellgen/singularity
+
+export NXF_OPTS='-Xms6G -Xmx22G -XX:+UseSerialGC'
+dir=$( pwd )
+run_name='haplotype_calling'
+
+workdir="$dir/${run_name}.workdir"
+run_parameters="$run_name.config.json"
+
+echo Workdir: $workdir
+echo Dataset: $run_name
+echo Params:  $run_parameters
+
+echo '=== Running Nextflow ==='
+
+nextflow \
+    -log ${run_name}.log \
+    -config hgi.config \
+    run https://github.com/nf-core/sarek -r 3.4.0 \
+    -work-dir $workdir \
+    -profile singularity,sanger \
+    -params-file $run_parameters \
+    -resume \
+    -with-report ${run_name}.report.html \
+    -with-trace ${run_name}.trace \
+    -with-timeline ${run_name}.timeline.html \
+    --outdir "$dir/${run_name}.outdir"
+```
+
 

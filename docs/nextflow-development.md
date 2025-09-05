@@ -361,7 +361,111 @@ Commonly used operators include:
 In Nextflow, a workflow is a function that composes processes 
 and dataflow logic (i.e. channels and operators).
 
-Details regarding workflows are in the [Nextflow workflows](https://www.nextflow.io/docs/latest/workflow.html) section.
+Details regarding workflows are in the 
+[Nextflow workflows](https://www.nextflow.io/docs/latest/workflow.html) section.
+
+A script can define up to one entry workflow, 
+which does not have a name and serves as the entrypoint of the script:
+
+```nextflow
+workflow {
+    channel.of('Bonjour', 'Ciao', 'Hello', 'Hola') // the point notation is the third way to chain data processing
+    .map { v -> "$v world!" }
+    .view()
+}
+```
+
+A script can declare parameters using the params block (JSON-like syntax):
+
+```nextflow
+params {
+    input_fastq: Path
+    refrence_genome: str = "GRCh38"
+    save_intermeds: Boolean = false // Whether to save intermediate files.
+}
+```
+
+The default value can be overridden by the command line, params file, or config file.
+Parameters from multiple sources are resolved in the order described in 
+[Pipeline parameters](https://www.nextflow.io/docs/latest/cli.html#cli-params).
+As a best practice, parameters should only be used directly in the entry workflow
+and passed to workflows and processes as explicit inputs.
+
+A named workflow is a workflow that can be called by other workflows:
+```nextflow
+workflow my_workflow {
+    hello()
+    bye( hello.out.collect() )
+}
+
+workflow {
+    my_workflow()
+}
+```
+
+When calling the workflow, the output can be accessed using the out property, i.e. `my_workflow.out`
+
+
+### Takes and emits
+
+The `take:` section declares the inputs of a named workflow.
+The `emit:` section declares the outputs of a named workflow.
+If an output is assigned to a name, the name can be used to reference the output from the calling workflow.
+
+```nextflow
+workflow hello_bye {
+    take:
+        data
+    main:
+        hello_out = hello(data)
+        bye(hello_out)
+    emit:
+        bye = bye.out
+}
+```
+
+Named outputs can be accessed as properties of the return value:
+
+```nextflow
+workflow {
+    data = channel.fromPath('/some/path/*.txt')
+    flow_out = hello_bye(data)
+    bye_out = flow_out.bye
+}
+```
+
+### Calling processes and workflows
+
+Processes and workflows are called like functions, passing their inputs as arguments:
+
+Processes and workflows have a few extra rules for how they can be called:
+* Processes and workflows can only be called by workflows
+* A given process or workflow can only be called once in a given workflow. 
+  To use a process or workflow multiple times in the same workflow, use `Module` aliases.
+
+### Workflow outputs
+
+A workflow or a process can have `publishDir` directive that declares
+that we want to publish output files from this workflow or process.
+All data files declared in the `output` section of the workflow are automatically published
+the the directory specified by the `publishDir` directive.
+
+
+```nextflow
+process fetch {
+    publishDir 'results/fetch'
+    // ...
+    output:
+        path 'sample.txt'
+    // ...
+}
+```
+
+### New style publishing
+There is a preview version of Nextflow syntax 
+that supports publishing of data files in a more flexible way, using `output {}` block.
+We don't consider it for now since its syntax and capabilities are not finalized.
+For details see [here](https://www.nextflow.io/docs/latest/workflow.html#workflow-outputs).
 
 
 
