@@ -161,7 +161,7 @@ def numbers = [1: 'one', 2: 'two']
 assert numbers[1] == 'one'
 ```
 
-**Blame minute:** By default, in Groovy strings in map keys are not quoted**.
+**A blame minute:** By default, in Groovy strings in map keys are not quoted**.
 ```groovy
 def ages = [Alice: 25, Bob: 30]
 ```
@@ -193,7 +193,7 @@ assert colors.green  == '#00FF00'
 assert colors.'light blue' == '#8888FF' // using quotas to access string key in point notation. 
 ```
 
-**Blame minute:** !!!Accessing nonexistent elements is not an exception.
+**A blame minute:** Accessing nonexistent elements is not an exception.
 Instead, it returns `null`:
 ```groovy
 def emptyMap = [:]
@@ -211,7 +211,7 @@ def (a, b, c) = [10, 20, 'foo'] // we can use tuples to pack/unpack array elemen
 def (int i, String j) = [10, 'foo'] // typed tuple
 ```
 
-Tuples can be accesses by indexes:
+Tuples can be accessed by indexes:
 ```groovy
 name = person[0]
 age = person[1]
@@ -222,7 +222,7 @@ is_male = person[2]
 
 ## Operators and control structures
 
-In geenral Groovy uses C/Java operators, brackets for blocks and functions.
+In general, Groovy uses C/Java operators, brackets for blocks and functions.
 
 ### Mathematics and logic operators
 Mostly the same as in Python, but with more precise variable type control,
@@ -258,7 +258,7 @@ Returns value depending on condition
 result = (string!=null && string.length()>0) ? 'Non-empty' : 'Empty'
 ```
 
-The "Elvis operator" is a shortening of the ternary operator.
+The "Elvis operator" is the shortening of the ternary operator.
 It is useful to check for null or empty value.
 
 ```groovy
@@ -273,7 +273,7 @@ atomicNumber ?= 2  // Assign 'atomicNumber' to 2 if before it was null or zero
 
 ### Safe navigation operator
 
-Avoid a NullPointerException when accessing null-object field.
+Avoid a NullPointerException when accessing the null-object field.
 Returns `null` instead
 
 ```groovy
@@ -293,7 +293,7 @@ assert 'hello' =~ /hello/
 assert 'hello world' =~ /hello/
 ```
 
-The `=~` returns match object - we can use it:
+The `=~` returns a "match" object. We can access its elements:
 
 ```groovy
 def programVersion = '2.7.3-beta'
@@ -309,7 +309,6 @@ Use `==~` to check whether a string matches a given regular expression pattern e
 assert 'hello' ==~ /hello/
 assert !('hello world' ==~ /hello/)
 ```
-
 
 ### Coercion operator (`as`)
 
@@ -327,7 +326,7 @@ Integer num = input as Integer // This works
 
 Mostly the same, as in C/Java.
 ```groovy
-C/Java style `if` operator:
+// C/Java style "if" operator:
 if (age > 18) {
     println "Adult"
 } else {

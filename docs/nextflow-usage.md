@@ -3,7 +3,7 @@ Nextflow usage
 
 ## Command-line parameters
 
-In the most simple way, to ru a workflow, you only need to specify the name of the workflow script:
+In the most simple way, to run a workflow, you only need to specify the name of the workflow script:
 ```bash
 nextflow run example-01/find_matches.nf
 ```
@@ -15,7 +15,7 @@ nextflow run example-01/find_matches.nf
 ```bash
 nextflow run example-01/find_matches.nf --size=5000000
 ```
-For complicated workflows, you can use a config file, that overrides the default parameters,
+For complicated workflows, you can use a config file that overrides the default parameters,
 defined in the pipeline code:
 ```bash
 nextflow -config my.config
@@ -23,10 +23,14 @@ nextflow -config my.config
 
 You can provide parameters in a separate file (JSON or YAML):
 
-```json
+```
 params {
-  "alpha": "default config value"
+  "size": 5000000
 }
+```
+
+```bash
+nextflow -params-file my_params.json
 ```
 
 Parameters are applied in the following order (from lowest to highest priority):

@@ -9,7 +9,7 @@ both running existing pipelines and creating your own.
 
 Nextflow (https://www.nextflow.io/)
 is the workflow orchestration language and engine developed by Seqera company (https://seqera.io/).
-Technically, it is a domian-specific languadge (DLS) built on top of the Groovy language (https://groovy-lang.org/).
+Technically, it is a domain-specific language (DLS) built on top of the Groovy language (https://groovy-lang.org/).
 
 The most part of Nextflow pipelines in bioinformatics
 follow the template defined by NF-Core community (https://nf-co.re/).
@@ -69,9 +69,9 @@ From the filesystem perspective, each task is a separate directory
 inside the Nextflow work directory.
 This directory contains symlinks to all input data files and scripts required to run the task.
 
-When the data via channels are passed to another tasks,
+When the data via channels is passed to another task,
 Nextflow creates a new folder for the task and symlinks all required files into it.
-You can have different file name in different processes.
+You can have different file names in different processes.
 Nextflow will ensure that all symlinks are correctly created.
 
 Each process can "publish" some output data
@@ -86,9 +86,9 @@ to create a task hash, and stores all this information into a database folder.
 
 If you modify and rerun your pipeline with the `-resume` option, 
 Nextflow checks if the task is already cached and skips the execution. 
-Therefore only new and modified tasks are executed.
+Therefore, only new and modified tasks are executed.
 
-**A blame minute:** Nextflow uses the task hash to name the task directory,
+**A blame minute:** Nextflow uses task hashes to name task directories,
 therefore, it's very hard to find all the tasks for a particular process.
 After several iterations of parameter modification and reruns, 
 you can end up with a huge number of obsolete tasks in your working directory,
