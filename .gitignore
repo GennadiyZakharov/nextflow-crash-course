@@ -9,3 +9,9 @@ testing*
 *.pyc
 singularity/
 .idea/
+
+*.workdir
+*.outdir
+*.log*
+*.html
+*.trace

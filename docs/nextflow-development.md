@@ -448,7 +448,7 @@ Processes and workflows have a few extra rules for how they can be called:
 A workflow or a process can have `publishDir` directive that declares
 that we want to publish output files from this workflow or process.
 All data files declared in the `output` section of the workflow are automatically published
-the the directory specified by the `publishDir` directive.
+to the directory specified by the `publishDir` directive.
 
 
 ```nextflow
@@ -464,14 +464,48 @@ process fetch {
 ### New style publishing
 There is a preview version of Nextflow syntax 
 that supports publishing of data files in a more flexible way, using `output {}` block.
-We don't consider it for now since its syntax and capabilities are not finalized.
+We don't consider it for now since its syntax and capabilities are not finalized yet.
 For details see [here](https://www.nextflow.io/docs/latest/workflow.html#workflow-outputs).
 
+## Modules
 
+Module is a Nextflow script that can be imported and used in other scripts.
+Module can contain workflows, processes, and other modules.
+Mostly, modules are used to import subworkflows into the main workflow.
+For details, see [here](https://www.nextflow.io/docs/latest/modules.html).
 
+A Nextflow script can include any number of modules, 
+and an include statement can import any number of definitions from a module.
 
+```nextflow
+include { cat; wc } from './some/module'
 
+workflow {
+    data = channel.fromPath('/some/data/*.txt')
+    cat(data)
+    wc(data)
+}
+```
 
+A module can be defined as a directory with the same name as the module 
+and with a script named main.nf. 
+For example:
+```
+some
+└── module
+└── main.nf
+```
+
+When defined as a directory, the module must be included by specifying the module directory path:
+```nextflow
+include { hello } from './some/module'
+```
+
+it’s possible to specify an alias with the as keyword. 
+```nextflow
+include { cat as cat_alpha } from './some/module'
+include { cat as cat_beta } from './other/module'
+```
 
 
 

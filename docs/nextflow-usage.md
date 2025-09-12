@@ -5,7 +5,7 @@ Nextflow usage
 
 In the most simple way, to run a workflow, you only need to specify the name of the workflow script:
 ```bash
-nextflow run example-01/find_matches.nf
+nextflow run examples/find_matches.nf
 ```
 
 * The parameters with single dash are Nextflow engine parameters (`-resume`)
@@ -13,7 +13,7 @@ nextflow run example-01/find_matches.nf
   They override defaults provided in the pipeline code.
 
 ```bash
-nextflow run example-01/find_matches.nf --size=5000000
+nextflow run examples/find_matches.nf --size=5000000
 ```
 For complicated workflows, you can use a config file that overrides the default parameters,
 defined in the pipeline code:
@@ -49,14 +49,15 @@ nextflow run nextflow-io/hello -r mybranch
 
 ## Working on the Sanger institute HPC cluster
 Nextflow has build-in support of 'profiles' -- wrappers that adopt scripts to run in different environments.
-Docker, Singularity and Conda profiles are suitable for the local execution.
+**Docker**, **Singularity** and **Conda** profiles are suitable for the local execution.
 Nextflow processes have a special section to define names of images or conda environments.
 
 Most organizations with HPC environments support custom profiles to run Nextflow pipelines.
-To use Nextflow profies on the Sanger Institute HPC,
+To use Nextflow profiles on the Sanger Institute HPC,
 you need to add `-profile singularity,sanger` to the Nextflow run parameters.
 
-Here is a good example of the run script for the Sanger HPC:
+Here is a good example of the run script for using Sarek in the Wellcome Sanger Institute HPC:
+
 ```bash
 #!/bin/bash
 set -e
@@ -71,11 +72,11 @@ echo 'Load modules'
 module load HGI/common/nextflow/25.04.6
 module load cellgen/singularity
 
-export NXF_OPTS='-Xms6G -Xmx22G -XX:+UseSerialGC'
-dir=$( pwd )
+export NXF_OPTS='-Xms1G -Xmx8G -XX:+UseSerialGC'
+
 run_name='haplotype_calling'
 
-workdir="$dir/${run_name}.workdir"
+workdir="${run_name}.workdir"
 run_parameters="$run_name.config.json"
 
 echo Workdir: $workdir
@@ -94,8 +95,7 @@ nextflow \
     -resume \
     -with-report ${run_name}.report.html \
     -with-trace ${run_name}.trace \
-    -with-timeline ${run_name}.timeline.html \
-    --outdir "$dir/${run_name}.outdir"
+    -with-timeline ${run_name}.timeline.html
 ```
 
 

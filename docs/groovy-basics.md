@@ -1,6 +1,6 @@
 Basics of Groovy syntax for Nextflow
 ====================================
-for the main scripting language, **Nextflow** uses Groovy — 
+As the main scripting language, **Nextflow** uses Groovy — 
 a dynamically typed scripting language,
 running on top of JVM.
 Groovy uses Java-style comments, operators and basic syntax.
@@ -161,7 +161,7 @@ def numbers = [1: 'one', 2: 'two']
 assert numbers[1] == 'one'
 ```
 
-**A blame minute:** By default, in Groovy strings in map keys are not quoted**.
+**A blame minute: By default, in Groovy strings in map keys are not quoted**.
 ```groovy
 def ages = [Alice: 25, Bob: 30]
 ```
@@ -193,13 +193,12 @@ assert colors.green  == '#00FF00'
 assert colors.'light blue' == '#8888FF' // using quotas to access string key in point notation. 
 ```
 
-**A blame minute:** Accessing nonexistent elements is not an exception.
+**A blame minute: Accessing nonexistent elements is not an exception.**
 Instead, it returns `null`:
 ```groovy
 def emptyMap = [:]
 assert emptyMap.anyKey == null
 ```
-
 
 ### Tuples
 
@@ -392,8 +391,8 @@ The main use case for a closure is as an argument to a higher-order function:
 Closures can have typed parameters:
 
 ```groovy
-def closureWithTwoArgsAndExplicitTypes = { int a, int b -> a+b }
-assert closureWithTwoArgsAndExplicitTypes(1,2) == 3
+def typedClosure = { int a, int b -> a+b }
+assert typedClosure(1,2) == 3
 ```
 
 When a closure does not explicitly define a parameter list (using ->), 

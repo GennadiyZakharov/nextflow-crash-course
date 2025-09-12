@@ -1,0 +1,13 @@
+#!/bin/bash
+set -e
+
+export NXF_OPTS='-Xms1G -Xmx4G -XX:+UseSerialGC'
+run_name='find_matches'
+
+nextflow \
+    -log "${run_name}.log" \
+    run "examples/find_matches.nf" \
+    -work-dir "${run_name}.workdir" \
+    -with-report "${run_name}.report.html" \
+    -with-trace "${run_name}.trace" \
+    -with-timeline "${run_name}.timeline.html" \
